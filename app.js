@@ -10,6 +10,9 @@ const rateLimiter = require("express-rate-limit");
 const express = require("express");
 const app = express();
 
+const swaggerUi = require("swagger-ui-express");
+swaggerDocument = require("./swagger.json");
+
 const connectDB = require("./db/connect");
 const authenticateUser = require("./middleware/authentication");
 // routers
@@ -31,15 +34,17 @@ app.use(helmet());
 app.use(cors());
 app.use(xss());
 
+// swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
+// Route handlers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", authenticateUser, productsRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 
 const start = async () => {
   try {
